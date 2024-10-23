@@ -1,0 +1,85 @@
+using System;
+using System.Data;
+using System.Windows.Forms;
+using MySqlConnector;
+
+namespace Abanales_Midterm_LabAct
+{
+    public partial class Form1 : Form
+    {
+        private string connectionString = "Server=localhost;Database=GymDB;User=root;Password=g1e@n#e$s%i&s;";
+        private MySqlConnection connection;
+
+        public Form1()
+        {
+            InitializeComponent();
+            connection = new MySqlConnection(connectionString);
+        }
+
+        private void CONNECT_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                connection.Open();
+                MessageBox.Show("Connection Successful, Database is already connected");
+                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error In Connection: " + ex.Message);
+            }
+        }
+
+        private void LoadData(string query)
+        {
+            try
+            {
+                connection.Open();
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataAdapter adap = new MySqlDataAdapter(cmd);
+
+                DataSet ds = new DataSet();
+                adap.Fill(ds);
+
+                dataGridView1.DataSource = null; // Clear existing data
+                dataGridView1.DataSource = ds.Tables[0].DefaultView; // Bind new data
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Data cannot be shown: " + ex.Message); // Show this message on error
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                }
+            }
+        }
+
+        private void Customer_Click(object sender, EventArgs e)
+        {
+            LoadData("SELECT * FROM Customer");
+        }
+
+        private void Product_Click(object sender, EventArgs e)
+        {
+            LoadData("SELECT * FROM Product");
+        }
+
+        private void Employee_Click(object sender, EventArgs e)
+        {
+            LoadData("SELECT * FROM Employee");
+        }
+
+        private void PointOfSale_Click(object sender, EventArgs e)
+        {
+            LoadData("SELECT * FROM PointOfSale");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
+        }
+    }
+}
